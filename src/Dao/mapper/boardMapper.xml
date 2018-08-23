@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="Dao.boardDao">
+
+ 	<select id="searchBoard" parameterType="java.util.HashMap" resultType="board">
+	select * from board 
+	where 1 = 0 
+	<if test="title!=null">
+	or title like '%${searchWord}%' 
+	</if>
+	<if test="content!=null">
+	or content like '%${searchWord}%' 
+	</if>
+	<if test="nickname!=null">
+	or nickname like '%${searchWord}%'
+	</if>	
+	order by writeDate desc limit ${skip}, ${qty}
+	</select>
+
+<!-- 	자유게시판 게시글 맵퍼 -->
+	<insert id="insertBoard" parameterType="board"> 
+		insert into board (title, id, content, file) 
+		values (#{title}, #{id}, #{content}, #{file});
+	</insert>
+
+	<update id="updateBoard" parameterType="board">
+		update board set title = #{title}, content = #{content}, file = #{file} where no = #{no};
+	</update>
+
+	<delete id="deleteBoard" parameterType="int">
+		delete from board where no = #{no};
+	</delete>
+
+	<select id="selectNotice" parameterType="String">
+		select * from board where id = admin order by writeDate desc limit 5;
+	</select>
+
+	<select id="selectBoard" resultType="board">
+		select * from board where id != 'admin' order by writeDate desc;
+	</select>
+
+	<select id="selectOneBoard" resultType="board" parameterType="int">
+		select * from board where no=#{no};
+	</select>	
+
+	<insert id="insertBoardComment" parameterType="boardComment"> 
+		insert into boardcomment 
+		values(#{no},#{id},#{content},default);	
+	</insert>	
+
+	<insert id="insertBoardRecomment" parameterType="boardReComment"> 
+		insert into boardrecomment 
+		values(#{commentNo},#{id},#{content},default);
+	</insert>
+
+	<select id="selectBoardComment" parameterType="int" resultType="boardComment">
+		select * from boardcomment join board using(no) where no = #{no};
+	</select>
+
+	<select id="selectBoardRecomment" parameterType="commentNo" resultType="boardReComment">
+		select commentNo,L.id,L.content,L.time from boardcomment 
+		join boardrecomment L using(commentNo) where no=#{no};
+	</select>
+
+ 	<select id="searchQna" parameterType="java.util.HashMap" resultType="qna">
+	select * from qna 
+	where 1 = 0 
+	<if test="title!=null">
+	or title like '%${searchWord}%' 
+	</if>
+	<if test="content!=null">
+	or content like '%${searchWord}%' 
+	</if>
+	<if test="nickname!=null">
+	or nickname like '%${searchWord}%'
+	</if>	
+	order by writeDate desc limit ${skip}, ${qty}
+	</select>
+
+<!-- 	QnA게시판 게시글 맵퍼 -->	
+	<insert id="insertQna" parameterType="qna"> 
+		insert into qna (title, id, content, file, pw) 
+		values (#{title}, #{id}, #{content}, #{file}, #{pw});
+	</insert>
+	
+	<update id="updateQna" parameterType="qna">
+		update qna set title = #{title}, content = #{content}, file = #{file} where no = #{no};
+	</update>
+
+	<delete id="deleteQna" parameterType="int">
+		delete from qna where no = #{no};
+	</delete>
+
+	<select id="selectQna" resultType="qna">
+		select * from qna order by writeDate desc;
+	</select>
+
+	<select id="selectOneQna" parameterType="int" resultType="qna">
+		select * from qna where no=#{no};
+	</select>
+
+	<insert id="insertQnaComment" parameterType="qnaComment">
+		insert into qnacomment values(#{no},#{id},#{content},default);
+	</insert>
+
+	<insert id="insertQnaRecomment" parameterType="qnaRecomment">
+		insert into qnarecomment values(#{commentNo},#{id},#{content},default);
+	</insert>
+
+	<select id="selectQnaComment" parameterType="int" resultType="qnaComment">
+		select * from qnacomment join qna using(no) where no = #{no};
+	</select>
+
+	<select id="selectOneQnaReComment" parameterType="int" resultType="qna">
+		select commentNo,L.id,L.content,L.time from qnacomment 
+		join qnarecomment L using(commentNo) where no=#{no};
+	</select>
+
+</mapper>
